@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>BkMrk</title>
+    <link rel="icon" href="favicon.png" type="image/png">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+            color: #333;
+            padding: 20px;
+            text-align: center;
+        }
+
+        #bookmarkForm {
+            margin-bottom: 20px;
+        }
+
+        #bookmarkForm input[type="text"], #bookmarkForm button {
+    padding: 10px;
+    margin-right: 5px;
+    border: 1px solid #ddd;
+    border-radius: 5px; /* 入力フィールドとボタンの角を丸める */
+}
+
+#bookmarkList li {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    padding: 10px;
+    margin: 10px;
+    width: calc(30% - 20px);
+    box-sizing: border-box;
+    text-align: left;
+    border-radius: 10px; /* リストアイテムの角を丸める */
+}
+
+#bookmarkList button {
+    padding: 5px 10px;
+    background-color: #f44336;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 3px; /* 削除ボタンの角を丸める */
+}
+
+
+        #bookmarkForm button:hover {
+            background-color: #357ae8;
+        }
+
+        #bookmarkList {
+            list-style: none;
+            padding: 0;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: flex-start;
+        }
+
+        #bookmarkList li {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin: 10px;
+            width: calc(30% - 20px);
+            box-sizing: border-box;
+            text-align: left;
+        }
+
+        #bookmarkList a {
+            color: #4285f4;
+            text-decoration: none;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        #bookmarkList button {
+            padding: 5px 10px;
+            background-color: #f44336;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        #bookmarkList button:hover {
+            background-color: #d32f2f;
+        }
+    </style>
+</head>
+<body>
+    <h1>BkMrk</h1>
+    <h2>手軽なブックマークサイト</h2>
+    <form id="bookmarkForm">
+        <input type="text" id="bookmarkTitle" placeholder="ブックマークのタイトル">
+        <input type="text" id="bookmarkURL" placeholder="ブックマークのURL">
+        <button type="submit">追加</button>
+    </form>    
+    <ul id="bookmarkList">
+        <!-- ブックマークがここに追加される -->
+    </ul>
+
+    <script>
+document.addEventListener('DOMContentLoaded', function() {
+    const bookmarkForm = document.getElementById('bookmarkForm');
+    const bookmarkList = document.getElementById('bookmarkList');
+    const bookmarkTitleInput = document.getElementById('bookmarkTitle');
+    const bookmarkURLInput = document.getElementById('bookmarkURL');
+
+    loadBookmarks();
+
+    bookmarkForm.addEventListener('submit', function(event) {
+        event.preventDefault();
+        const title = bookmarkTitleInput.value;
+        const url = bookmarkURLInput.value;
+        if (title && url) {
+            addBookmark(title, url);
+            bookmarkTitleInput.value = '';
+            bookmarkURLInput.value = '';
+            saveBookmarks();
+        }
+    });
+
+    bookmarkList.addEventListener('click', function(event) {
+        if (event.target.tagName === 'BUTTON') {
+            const li = event.target.parentElement;
+            bookmarkList.removeChild(li);
+            saveBookmarks();
+        }
+    });
+    function addBookmark(title, url) {
+    const listItem = document.createElement('li');
+    listItem.style.display = 'flex';
+    listItem.style.alignItems = 'center';
+    listItem.style.marginBottom = '10px';
+
+    const favicon = document.createElement('img');
+    favicon.src = `https://www.google.com/s2/favicons?domain=${url}`;
+    favicon.alt = 'Favicon';
+    favicon.style.width = '16px';
+    favicon.style.height = '16px';
+    favicon.style.marginRight = '10px';
+    listItem.appendChild(favicon);
+
+    const link = document.createElement('a');
+    link.textContent = title;
+    link.href = url;
+    link.target = '_blank'; // 新しいタブでリンクを開く
+    listItem.appendChild(link);
+
+    const deleteButton = document.createElement('button');
+    deleteButton.textContent = '削除';
+    deleteButton.style.marginLeft = 'auto';
+    listItem.appendChild(deleteButton);
+
+    bookmarkList.appendChild(listItem);
+}
+
+
+
+    function saveBookmarks() {
+        const bookmarks = [];
+        document.querySelectorAll('#bookmarkList li').forEach(item => {
+            const link = item.querySelector('a');
+            bookmarks.push({ title: link.textContent, url: link.getAttribute('href') });
+        });
+        localStorage.setItem('bookmarks', JSON.stringify(bookmarks));
+    }
+
+    function loadBookmarks() {
+        const bookmarks = JSON.parse(localStorage.getItem('bookmarks'));
+        if (bookmarks) {
+            bookmarks.forEach(bookmark => {
+                addBookmark(bookmark.title, bookmark.url);
+            });
+        }
+    }
+});
+
+
+    </script>
+</body>
+</html>
